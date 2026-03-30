@@ -1,53 +1,45 @@
-csms_backend/
-├── alembic/                      # Database migrations
-│   ├── versions/
-│   └── env.py
-├── app/
-│   ├── __init__.py
-│   ├── main.py                   # FastAPI app entry point
-│   ├── config.py                 # Settings & environment
-│   ├── database.py               # DB connection & session
-│   ├── models/                   # SQLAlchemy models (auto-generated from ER)
-│   │   ├── __init__.py
-│   │   ├── base.py               # Base declarative class
-│   │   ├── user.py
-│   │   ├── site.py
-│   │   └── ...
-│   ├── schemas/                  # Pydantic models (request/response)
-│   │   ├── __init__.py
-│   │   ├── user.py
-│   │   └── ...
-│   ├── crud/                     # Database operations
-│   │   ├── __init__.py
-│   │   ├── base.py               # Generic CRUD class
-│   │   └── user.py
-│   ├── api/                      # API routes
-│   │   ├── __init__.py
-│   │   ├── deps.py               # Dependencies (DB session, auth)
-│   │   ├── v1/
-│   │   │   ├── __init__.py
-│   │   │   ├── endpoints/
-│   │   │   │   ├── users.py
-│   │   │   │   ├── sites.py
-│   │   │   │   └── ...
-│   │   │   └── api.py            # Router aggregator
-│   │   └── api.py
-│   ├── services/                 # Business logic (your R001-R006 rules)
-│   │   ├── __init__.py
-│   │   ├── expense_calculator.py
-│   │   ├── stock_movement.py
-│   │   └── attendance_service.py
-│   ├── core/                     # Security, logging, exceptions
-│   │   ├── security.py
-│   │   ├── logging.py
-│   │   └── exceptions.py
-│   └── utils/                    # Helpers
-│       └── ...
-├── tests/
-│   ├── conftest.py
-│   └── ...
-├── .env                          # Environment variables (gitignored)
-├── .env.example                  # Template for collaborators
-├── alembic.ini                   # Migration config
-├── requirements.txt
-└── README.md
+csms-backend/
+|-- .env.example
+|-- .gitignore
+|-- LICENSE
+|-- README.md
+|-- alembic.ini
+|-- project-structure.txt
+|-- requirements.txt
+|-- alembic/
+|   |-- README
+|   |-- env.py
+|   `-- script.py.mako
+|-- app/
+|   |-- __init__.py
+|   |-- config.py
+|   |-- database.py
+|   |-- main.py
+|   |-- api/
+|   |   |-- __init__.py
+|   |   |-- version_routes.py
+|   |   `-- v1/
+|   |       |-- __init__.py
+|   |       |-- routes.py
+|   |       `-- controllers/
+|   |           |-- __init__.py
+|   |           `-- users.py
+|   |-- core/
+|   |   |-- __init__.py
+|   |   `-- security.py
+|   |-- models/
+|   |   |-- __init__.py
+|   |   |-- base.py
+|   |   `-- user.py
+|   |-- schemas/
+|   |   |-- __init__.py
+|   |   `-- user.py
+|   |-- services/
+|   |   |-- __init__.py
+|   |   `-- attendance_service.py
+|   `-- utils/
+|       `-- __init__.py
+`-- tests/
+	|-- __init__.py
+	|-- conftest.py
+	`-- test_health.py
