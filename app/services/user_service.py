@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from app.models.user import User
 
 
-class UsersService:
+class UserService:
 
     @staticmethod
     def list_users(db: Session):
