@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import get_settings
-from app.api.version_routes import api_router
+from app.api.v1.router import api_router as v1_router
 
 settings = get_settings()
 
@@ -24,7 +24,7 @@ app.add_middleware(
 )
 
 # Include API routes
-app.include_router(api_router, prefix="/api")
+app.include_router(v1_router, prefix="/api/v1")
 
 @app.get("/")
 def root():
