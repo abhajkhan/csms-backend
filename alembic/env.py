@@ -7,7 +7,7 @@ import sys
 # Add app to path
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
-from app.config import get_settings
+from app.core.config import get_settings
 from app.database import Base
 from app import models  # Import all models here
 
