@@ -5,7 +5,7 @@ from app.db.database import get_db
 from app.schemas.user import UserResponse
 from app.services.user_service import UserService
 
-router = APIRouter()
+router = APIRouter(prefix="/users", tags=["users"])
 
 
 @router.get("/", response_model=List[UserResponse])
