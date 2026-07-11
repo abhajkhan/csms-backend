@@ -1,49 +1,102 @@
-"""Common Pydantic schemas shared across modules.
+"""Enhanced common Pydantic schemas shared across modules.
 
-Provides:
-    ``PaginatedResponse``  — standard paginated list wrapper.
-    ``APIResponse``        — standard success response envelope.
-    ``APIError``           — standard error response envelope.
+Provides the canonical response envelope types used by all API endpoints.
+These models are the Pydantic counterparts to the ``app.utils.response``
+builder functions.
 
 Per 02_BACKEND_RULES.md §12 Response Format and §13 Pagination.
 """
 
+from __future__ import annotations
+
 from typing import Any, Generic, TypeVar
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator
 
 DataT = TypeVar("DataT")
 
 
+# ─── Success envelope ────────────────────────────────────────────────────────
+
+
 class APIResponse(BaseModel, Generic[DataT]):
-    """Standard success response envelope."""
+    """Standard success response envelope.
+
+    Used as the ``response_model`` on FastAPI route decorators::
+
+        @router.get("/workers/{id}", response_model=APIResponse[WorkerResponse])
+        def get_worker(...):
+            ...
+    """
 
     success: bool = True
     message: str = "Operation completed successfully."
     data: DataT | None = None
 
 
+# ─── Error envelope ──────────────────────────────────────────────────────────
+
+
 class APIError(BaseModel):
-    """Standard error response envelope."""
+    """Standard error response envelope.
+
+    Returned by exception handlers via ``JSONResponse(content=error_response(...))``.
+    """
 
     success: bool = False
     message: str
     errors: Any | None = None
 
 
-class PaginationMeta(BaseModel):
-    """Pagination metadata included in list responses."""
+# ─── Pagination metadata ─────────────────────────────────────────────────────
 
-    page: int
-    page_size: int
-    total: int
-    total_pages: int
+
+class PaginationMeta(BaseModel):
+    """Metadata describing a paginated result set.
+
+    Attributes:
+        page:        Current page number (1-indexed).
+        page_size:   Number of items per page.
+        total:       Total count of matching records.
+        total_pages: Total number of pages.
+    """
+
+    page: int = Field(..., ge=1)
+    page_size: int = Field(..., ge=1)
+    total: int = Field(..., ge=0)
+    total_pages: int = Field(..., ge=0)
+
+    @field_validator("total_pages")
+    @classmethod
+    def _total_pages_consistent(cls, v: int, info: Any) -> int:
+        """Ensure total_pages ≥ 0."""
+        return max(v, 0)
 
 
 class PaginatedResponse(BaseModel, Generic[DataT]):
-    """Paginated list response wrapper."""
+    """Standard paginated list response envelope.
+
+    Used as the ``response_model`` on list endpoints::
+
+        @router.get("/workers", response_model=PaginatedResponse[WorkerResponse])
+        def list_workers(...):
+            ...
+    """
 
     success: bool = True
     message: str = "OK"
     data: list[DataT]
     meta: PaginationMeta
+
+
+# ─── No-content ──────────────────────────────────────────────────────────────
+
+
+class NoContentResponse(BaseModel):
+    """Schema for successful operations with no return body (e.g. DELETE).
+
+    Pair with ``status_code=204`` in the route decorator.
+    """
+
+    success: bool = True
+    message: str = "Resource deleted successfully."
