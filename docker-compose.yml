@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  # ─── PostgreSQL Database ───────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: csms_user
+      POSTGRES_PASSWORD: csms_password
+      POSTGRES_DB: csms_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U csms_user -d csms_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── CSMS API ─────────────────────────────────────────────────────────────
+  api:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://csms_user:csms_password@db:5432/csms_db
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

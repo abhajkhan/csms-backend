@@ -1,15 +1,17 @@
-from sqlalchemy import Column, String, Enum, Boolean
-from sqlalchemy.orm import relationship
-from app.models.base import BaseModel
+"""User ORM model — placeholder.
 
+Implementation pending Phase 1 — Auth & User Management.
 
-class User(BaseModel):
-    __tablename__ = "users"
-    
-    role = Column(Enum("admin", "supervisor", "driver", name="user_roles"))
-    full_name = Column(String(100), nullable=False)
-    phone = Column(String(20), unique=True, index=True)
-    email = Column(String(100), unique=True, index=True)
-    password_hash = Column(String(255), nullable=False)
-    is_active = Column(Boolean, default=True)
-    
+Table: ``users``
+Design reference: Construction_System_Design_v2.md §4.1
+
+Columns to implement:
+    user_id       int PK
+    role          enum(admin, supervisor, driver)
+    driver_type   enum(hitachi, ajax, normal) | NULL
+    full_name     varchar
+    phone         varchar UNIQUE
+    password_hash varchar
+    is_active     boolean
+    acc_balance   decimal | NULL  (supervisors only)
+"""

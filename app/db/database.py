@@ -1,24 +1,17 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+"""SQLAlchemy engine factory.
+
+The engine is the single entry-point for all database connectivity.
+Session management lives in ``app.db.session``.
+"""
+
+from sqlalchemy import Engine, create_engine
+
 from app.core.config import get_settings
 
 settings = get_settings()
 
-engine = create_engine(
+engine: Engine = create_engine(
     settings.DATABASE_URL,
-    pool_pre_ping=True,
-    echo=settings.DEBUG,
+    pool_pre_ping=True,   # verifies connection health before use
+    echo=settings.DEBUG,  # logs SQL statements when DEBUG=True
 )
-
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-Base = declarative_base()
-
-
-def get_db():
-    """Dependency for FastAPI routes"""
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
