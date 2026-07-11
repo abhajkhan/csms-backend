@@ -27,19 +27,24 @@ pip install -r requirements.txt
 cp .env.example .env
 # Edit .env with your database credentials
 ```
+
 ### 2. Setup Database
+
 ```
 # Create database
-createdb construction_db  # PostgreSQL
+createdb csms_db  # PostgreSQL
 
 # Run migrations
 alembic upgrade head
 ```
+
 ### 3. Run Development Server
+
 ```
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 Access API docs at: http://localhost:8000/docs
 ```
+
 ## Project Structure
 
 ```
@@ -48,14 +53,22 @@ csms-backend/
 ├── app/
 │   ├── api/              # API routes
 │   ├── core/             # Security, exceptions
-│   ├── crud/             # Database operations
+│   ├── db/               # Database operations
 │   ├── models/           # SQLAlchemy models
 │   ├── schemas/          # Pydantic schemas
+│   ├── repositories/
 │   ├── services/         # Business logic (R001-R006)
+│   ├── dependencies/
+│   ├── middleware/
+│   ├── validators/
+│   ├── constants/
+│   ├── utils/
 │   └── main.py           # Application entry
 └── tests/                # Test suite
 ```
+
 ## Business Rules Implementation
+
 | Rule | Description                      | Location                         |
 | ---- | -------------------------------- | -------------------------------- |
 | R001 | Stock movement auto-expense      | `services/expense_calculator.py` |
@@ -65,29 +78,34 @@ csms-backend/
 | R005 | Attendance date validation       | `services/attendance_service.py` |
 | R006 | Site-assignment validation       | `services/attendance_service.py` |
 
-
 ## API Endpoints
 
 #### Authentication
+
 - POST /api/v1/auth/login - OAuth2 login
+
 #### Users (Admin only)
+
 - GET /api/v1/users/ - List users
 - POST /api/v1/users/ - Create user
 - GET /api/v1/users/me - Current user profile
 
 ## Development
+
 #### Run Tests
+
 ```
 pytest
 ```
 
 #### Code Formatting
+
 ```
-black app/ tests/
-isort app/ tests/
+pre-commit run --all-files
 ```
 
 #### Database Migrations
+
 ```
 # Create new migration
 alembic revision --autogenerate -m "description"
@@ -100,4 +118,4 @@ alembic downgrade -1
 ```
 
 License
- 	Private - All rights reserved
+Private - All rights reserved
