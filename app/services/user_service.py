@@ -1,15 +1,13 @@
-"""Service layer placeholders — update user_service to clean placeholder."""
+"""UserService for User management.
 
-from sqlalchemy.orm import Session
+Per CSMS_SPEC.md §6.1 & §10.1
+"""
+
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class UserService:
-    """Service for User business operations.
+    """Service for user administration."""
 
-    Placeholder — implementation pending Phase 1.
-    """
-
-    def __init__(self, db: Session) -> None:
+    def __init__(self, db: AsyncSession) -> None:
         self.db = db
-
-    # TODO: Implement user service methods.

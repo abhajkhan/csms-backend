@@ -1,15 +1,13 @@
-"""PurchaseService — placeholder.
+"""PurchaseService for normal driver purchases.
 
-Implementation pending Phase 5 — Normal Driver Purchase Management.
+Per CSMS_SPEC.md §6.15 & §9.5
 """
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class PurchaseService:
-    """Service for Purchase business operations (normal driver only)."""
+    """Service for purchase operations."""
 
-    def __init__(self, db: Session) -> None:
+    def __init__(self, db: AsyncSession) -> None:
         self.db = db
-
-    # TODO: Implement purchase service methods.

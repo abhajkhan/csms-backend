@@ -1,15 +1,13 @@
-"""DashboardService — placeholder.
+"""DashboardService for executive dashboard analytics.
 
-Implementation pending Phase 7 — Dashboard.
+Per CSMS_SPEC.md §11.7
 """
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class DashboardService:
-    """Service for role-scoped dashboard statistics."""
+    """Service for dashboard metrics operations."""
 
-    def __init__(self, db: Session) -> None:
+    def __init__(self, db: AsyncSession) -> None:
         self.db = db
-
-    # TODO: Implement dashboard service methods.

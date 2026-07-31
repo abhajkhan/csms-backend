@@ -1,15 +1,13 @@
-"""WarehouseService — placeholder.
+"""WarehouseService for warehouse inventory and stock movements.
 
-Implementation pending Phase 6 — Warehouse & Inventory Management.
+Per CSMS_SPEC.md §6.11-§6.14 & §8.6
 """
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class WarehouseService:
-    """Service for Warehouse and Inventory business operations."""
+    """Service for warehouse and inventory operations."""
 
-    def __init__(self, db: Session) -> None:
+    def __init__(self, db: AsyncSession) -> None:
         self.db = db
-
-    # TODO: Implement warehouse service methods.

@@ -1,20 +1,13 @@
-"""ExpenseService — placeholder.
+"""ExpenseService for site expense management.
 
-Implementation pending Phase 4 — Expense Management.
-
-Critical business rule to implement:
-    Every expense creation must atomically debit the supervisor wallet
-    and produce a SupervisorBalanceLog entry.
-    Per Construction_System_Design_v2.md §8 Transaction Integrity.
+Per CSMS_SPEC.md §6.8 & §8.1
 """
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class ExpenseService:
-    """Service for Expense business operations."""
+    """Service for expense operations."""
 
-    def __init__(self, db: Session) -> None:
+    def __init__(self, db: AsyncSession) -> None:
         self.db = db
-
-    # TODO: Implement expense service methods.

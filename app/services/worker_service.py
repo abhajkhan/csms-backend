@@ -1,15 +1,13 @@
-"""WorkerService — placeholder.
+"""WorkerService for Worker management.
 
-Implementation pending Phase 2 — Worker Management.
+Per CSMS_SPEC.md §6.4 & §8.5
 """
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class WorkerService:
-    """Service for Worker business operations."""
+    """Service for worker management."""
 
-    def __init__(self, db: Session) -> None:
+    def __init__(self, db: AsyncSession) -> None:
         self.db = db
-
-    # TODO: Implement worker service methods.

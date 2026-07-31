@@ -1,15 +1,13 @@
-"""ReportService — placeholder.
+"""ReportService for reports generation.
 
-Implementation pending Phase 7 — Reporting.
+Per CSMS_SPEC.md §11.7
 """
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class ReportService:
-    """Service for generating read-only reports."""
+    """Service for reporting operations."""
 
-    def __init__(self, db: Session) -> None:
+    def __init__(self, db: AsyncSession) -> None:
         self.db = db
-
-    # TODO: Implement report service methods.

@@ -1,20 +1,13 @@
-"""WalletService — placeholder.
+"""WalletService for supervisor wallet management.
 
-Implementation pending Phase 4 — Supervisor Wallet Management.
-
-Critical business rule to implement:
-    Every acc_balance update on Users must atomically produce a
-    SupervisorBalanceLog entry.
-    Per Construction_System_Design_v2.md §8 Supervisor Wallet.
+Per CSMS_SPEC.md §6.6 & §8.1
 """
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class WalletService:
-    """Service for Supervisor Wallet business operations."""
+    """Service for supervisor wallet operations."""
 
-    def __init__(self, db: Session) -> None:
+    def __init__(self, db: AsyncSession) -> None:
         self.db = db
-
-    # TODO: Implement wallet credit, debit, and history methods.

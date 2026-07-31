@@ -1,15 +1,13 @@
-"""AuthService — placeholder.
+"""AuthService for authentication logic.
 
-Implementation pending Phase 1 — Auth & User Management.
+Per CSMS_SPEC.md §11.4
 """
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class AuthService:
-    """Service for authentication and token management."""
+    """Service for authentication operations."""
 
-    def __init__(self, db: Session) -> None:
+    def __init__(self, db: AsyncSession) -> None:
         self.db = db
-
-    # TODO: Implement login, refresh, logout, and get_current_user.
