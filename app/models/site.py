@@ -26,10 +26,13 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
 
 if TYPE_CHECKING:
+    from app.models.ajax_driver_log import AjaxDriverLog
     from app.models.attendance import Attendance
     from app.models.expense import Expense
+    from app.models.hitachi_driver_log import HitachiDriverLog
     from app.models.purchase import Purchase
-    from app.models.stock import AjaxDriverLog, HitachiDriverLog, StockMovement
+    from app.models.site_supervisor import SiteSupervisor
+    from app.models.stock import StockMovement
     from app.models.user import User
 
 
@@ -136,87 +139,3 @@ class Site(Base):
             f"site_name={self.site_name!r})>"
         )
 
-
-# ── SiteSupervisor ────────────────────────────────────────
-
-
-class SiteSupervisor(Base):
-    """ORM model for the ``site_supervisors`` table.
-
-    Junction / association table linking supervisors to the
-    sites they are assigned to.
-
-    Attributes
-    ----------
-    id : int
-        Auto-incrementing surrogate primary key.
-    site_id : int
-        FK → ``sites.site_id``.
-    supervisor_id : int
-        FK → ``users.user_id``.
-    assigned_at : datetime
-        UTC timestamp of when the assignment was made.
-    is_active : bool
-        Soft-delete flag for the assignment.
-    """
-
-    __tablename__ = "site_supervisors"
-    __table_args__ = (
-        UniqueConstraint(
-            "site_id",
-            "supervisor_id",
-            name="uq_site_supervisor",
-        ),
-        Index(
-            "ix_site_supervisor_active",
-            "site_id",
-            "supervisor_id",
-            "is_active",
-        ),
-    )
-
-    # ── primary key ───────────────────────────────────────
-    id: Mapped[int] = mapped_column(
-        Integer,
-        primary_key=True,
-        autoincrement=True,
-    )
-
-    # ── foreign keys ──────────────────────────────────────
-    site_id: Mapped[int] = mapped_column(
-        Integer,
-        ForeignKey("sites.site_id"),
-        nullable=False,
-    )
-    supervisor_id: Mapped[int] = mapped_column(
-        Integer,
-        ForeignKey("users.user_id"),
-        nullable=False,
-    )
-
-    # ── timestamps / flags ────────────────────────────────
-    assigned_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        nullable=False,
-        server_default=func.now(),
-    )
-    is_active: Mapped[bool] = mapped_column(
-        Boolean,
-        nullable=False,
-        default=True,
-    )
-
-    # ── relationships ─────────────────────────────────────
-    site: Mapped["Site"] = relationship(
-        back_populates="supervisors",
-    )
-    supervisor: Mapped["User"] = relationship(
-        back_populates="site_assignments",
-    )
-
-    def __repr__(self) -> str:  # pragma: no cover
-        return (
-            f"<SiteSupervisor(id={self.id}, "
-            f"site_id={self.site_id}, "
-            f"supervisor_id={self.supervisor_id})>"
-        )

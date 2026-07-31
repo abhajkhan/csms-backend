@@ -37,8 +37,9 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
 
 if TYPE_CHECKING:
+    from app.models.ajax_driver_log import AjaxDriverLog
+    from app.models.hitachi_driver_log import HitachiDriverLog
     from app.models.site import Site
-    from app.models.stock import AjaxDriverLog, HitachiDriverLog
     from app.models.user import User
 
 

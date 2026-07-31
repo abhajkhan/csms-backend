@@ -16,13 +16,16 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
 
 if TYPE_CHECKING:
+    from app.models.ajax_driver_log import AjaxDriverLog
     from app.models.attendance import Attendance
     from app.models.expense import Expense
+    from app.models.hitachi_driver_log import HitachiDriverLog
     from app.models.purchase import Purchase
-    from app.models.site import Site, SiteSupervisor
-    from app.models.stock import AjaxDriverLog, HitachiDriverLog
-    from app.models.wallet import SupervisorBalanceLog, WorkerPayment
+    from app.models.site import Site
+    from app.models.site_supervisor import SiteSupervisor
+    from app.models.wallet import SupervisorBalanceLog
     from app.models.worker import Worker
+    from app.models.worker_payment import WorkerPayment
 
 
 class User(Base):
@@ -138,12 +141,6 @@ class User(Base):
     purchases: Mapped[list["Purchase"]] = relationship(
         back_populates="purchased_by_user",
         lazy="selectin",
-    )
-    verified_attendances: Mapped[list["Attendance"]] = (
-        relationship(
-            back_populates="verified_by_user",
-            lazy="selectin",
-        )
     )
 
     def __repr__(self) -> str:  # pragma: no cover

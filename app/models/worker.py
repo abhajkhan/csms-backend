@@ -28,7 +28,7 @@ from app.db.base import Base
 
 if TYPE_CHECKING:
     from app.models.user import User
-    from app.models.wallet import WorkerPayment
+    from app.models.worker_payment import WorkerPayment
 
 
 class Worker(Base):
