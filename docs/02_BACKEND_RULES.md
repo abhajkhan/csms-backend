@@ -1,60 +1,54 @@
+# BACKEND_RULES.md
+
 # Backend Development Rules
 
-Version: 1.0
+**Version:** 2.1
 
-This document defines the mandatory backend development standards for the Construction Site Management System (CSMS).
+This document defines **how the backend must be implemented**.
 
-Every AI Agent and developer must follow these rules when implementing backend features.
+All business rules, workflows, database design, APIs, and module responsibilities are defined in **CSMS_SPEC.md**.
 
-The Construction_System_Design_v2.md document defines WHAT the system should do.
-
-This document defines HOW it should be implemented.
+If this document conflicts with **CSMS_SPEC.md**, the specification always takes precedence.
 
 ---
 
 # 1. Technology Stack
 
-The backend must use the following technologies.
+The backend must use:
 
-| Component        | Technology     |
-| ---------------- | -------------- |
-| Language         | Python 3.12+   |
-| Framework        | FastAPI        |
-| Database         | PostgreSQL     |
-| ORM              | SQLAlchemy 2.0 |
-| Migration        | Alembic        |
-| Validation       | Pydantic v2    |
-| Authentication   | JWT            |
-| Password Hashing | BCrypt         |
-| Testing          | Pytest         |
+| Component        | Technology             |
+| ---------------- | ---------------------- |
+| Language         | Python 3.12+           |
+| Framework        | FastAPI                |
+| Database         | PostgreSQL             |
+| ORM              | SQLAlchemy 2.x (Async) |
+| Migration        | Alembic                |
+| Validation       | Pydantic v2            |
+| Authentication   | JWT                    |
+| Password Hashing | BCrypt                 |
+| Testing          | Pytest                 |
 
-No alternative frameworks or libraries should be introduced without explicit approval.
+No alternative frameworks or libraries may be introduced without approval.
 
 ---
 
 # 2. Architecture
 
-The backend follows a layered architecture.
+The backend follows Layered Architecture.
 
 ```
 API
-
-↓
-
+ ↓
 Service
-
-↓
-
+ ↓
 Repository
-
-↓
-
+ ↓
 Database
 ```
 
 Each layer has exactly one responsibility.
 
-Business logic must never bypass the Service Layer.
+Business logic must never bypass the Service layer.
 
 ---
 
@@ -62,491 +56,465 @@ Business logic must never bypass the Service Layer.
 
 ## API Layer
 
-Responsibilities
+Responsible for:
 
-- Receive HTTP requests
-- Validate request data
-- Authenticate user
-- Authorize user
-- Call services
-- Return response
+* HTTP routing
+* Request validation
+* Authentication
+* Authorization
+* Calling services
+* Returning HTTP responses
 
-API routes must never
+Must never:
 
-- execute SQL
-- contain business logic
-- perform calculations
-- update multiple entities
+* Execute SQL
+* Contain business logic
+* Manage transactions
 
 ---
 
 ## Service Layer
 
-Responsibilities
+Responsible for:
 
-- Implement business rules
-- Validate business conditions
-- Coordinate repositories
-- Handle transactions
-- Raise business exceptions
+* Business logic
+* Business validation
+* Coordinating repositories
+* Transaction management
+* Raising business exceptions
 
-Services must never
+Services may coordinate multiple repositories.
 
-- contain HTTP logic
-- return HTTP responses
-- directly access request objects
+Must never:
+
+* Return HTTP responses
+* Access request objects
+* Execute raw SQL directly
 
 ---
 
 ## Repository Layer
 
-Responsibilities
+Responsible for:
 
-- SQLAlchemy queries
-- CRUD operations
-- Database filtering
-- Pagination
-- Joins
+* Database access
+* CRUD operations
+* Query construction
+* Filtering
+* Pagination
 
-Repositories must never
+Must never:
 
-- contain business rules
-- perform authorization
-- call other repositories
+* Contain business rules
+* Perform authorization
+* Commit or rollback transactions
+* Call other repositories
+
+Repositories should only mutate database state through requests initiated by Services.
 
 ---
 
 ## Model Layer
 
-Responsibilities
+Responsible for:
 
-- Database schema
-- Relationships
-- Constraints
+* Database schema
+* Relationships
+* Constraints
 
-Models must never contain business logic.
+Models must not contain business logic.
 
 ---
 
 ## Schema Layer
 
-Responsibilities
+Responsible for:
 
-- Request DTOs
-- Response DTOs
-- Validation
+* Request DTOs
+* Response DTOs
+* Validation
 
-Only Pydantic schemas should be exposed outside the Service Layer.
-
----
-
-# 4. Dependency Injection
-
-Use FastAPI dependency injection for
-
-- Database session
-- Current user
-- Permissions
-- Pagination
-- Authentication
-
-Do not instantiate dependencies manually.
+Only Pydantic schemas are exposed outside the Service layer.
 
 ---
 
-# 5. Repository Pattern
+# 4. Async Development
 
-Every business module should have
+The application uses asynchronous execution throughout.
+
+* Use AsyncSession.
+* Endpoints must be async.
+* Services must be async.
+* Repositories must be async.
+* Never mix synchronous and asynchronous SQLAlchemy sessions.
+
+---
+
+# 5. Dependency Injection
+
+Use FastAPI dependency injection for:
+
+* Database session
+* Current user
+* Authentication
+* Authorization
+* Pagination
+* Application services (where appropriate)
+
+Infrastructure dependencies must not be instantiated manually.
+
+---
+
+# 6. Repository Pattern
+
+Every business module follows:
 
 ```
 Repository
-
-↓
-
+ ↓
 Service
-
-↓
-
+ ↓
 Endpoint
 ```
 
-Example
-
-```
-WorkerRepository
-
-↓
-
-WorkerService
-
-↓
-
-workers.py
-```
-
-Repositories own all SQLAlchemy code.
+Repositories own all ORM interaction.
 
 ---
 
-# 6. Transactions
+# 7. Transactions
 
-Transactions must always be managed inside the Service Layer.
+Transactions are managed exclusively in the Service layer.
 
-Repositories must never commit transactions.
+Repositories must never call:
 
-Use
+* commit()
+* rollback()
 
-```
-session.begin()
-```
+Each business operation should execute within a single transaction unless CSMS_SPEC.md specifies otherwise.
 
-or equivalent transaction management.
+Transactions must either:
 
-Rollback automatically on failure.
-
----
-
-# 7. Atomic Operations
-
-The following operations must always execute atomically.
-
-- Expense creation + Supervisor wallet deduction
-- Worker advance + Wallet deduction
-- Wallet credit + Balance Log
-- Attendance rejection + Expense deletion
-- Warehouse transfer + Expense creation
-- Ajax Driver Log + Expense creation
-- Hitachi Driver Log + Expense creation
-- Stock Movement + Warehouse Stock update
-
-Business rules are defined in Construction_System_Design_v2.md.
+* Commit completely
+* Roll back completely
 
 ---
 
-# 8. Authentication
+# 8. Atomic Operations
+
+Business operations defined as atomic in **CSMS_SPEC.md** must always execute within a single transaction.
+
+Partial updates are never allowed.
+
+---
+
+# 9. Authentication
 
 Authentication uses JWT.
 
-Protected endpoints must always verify
+Protected endpoints must verify:
 
-- access token
-- active account
-- user role
+* Access token
+* Active account
+* User identity
 
-Never trust client-provided role information.
+Refresh-token behavior follows CSMS_SPEC.md.
 
-Always read permissions from authenticated user.
-
----
-
-# 9. Authorization
-
-Authorization must be role-based.
-
-Roles
-
-- Admin
-- Supervisor
-- Ajax Driver
-- Hitachi Driver
-- Normal Driver
-
-Every protected endpoint must verify permissions before executing business logic.
+Never trust client-provided identity or roles.
 
 ---
 
-# 10. Validation
+# 10. Authorization
+
+Authorization is role-based.
+
+Endpoint access should be validated before business execution.
+
+Business-level authorization rules belong in the Service layer.
+
+Repositories must never perform authorization.
+
+---
+
+# 11. Validation
 
 Validation occurs in three stages.
 
-## Request Validation
+### Request Validation
 
 Handled by Pydantic.
 
-Examples
+Examples:
 
-- Required fields
-- String length
-- Email
-- Numeric ranges
+* Required fields
+* Length
+* Format
+* Numeric ranges
 
----
-
-## Business Validation
+### Business Validation
 
 Handled by Services.
 
-Examples
+Examples:
 
-- Wallet balance
-- Active worker
-- Driver type
-- Attendance state
+* Business state
+* Duplicate prevention
+* Resource ownership
+* Domain rules
 
----
+### Database Validation
 
-## Database Validation
+Handled using:
 
-Handled through
-
-- Constraints
-- Foreign Keys
-- Unique Indexes
+* Constraints
+* Foreign Keys
+* Unique Indexes
 
 ---
 
-# 11. Error Handling
+# 12. Exception Handling
 
-Use custom exceptions for business errors.
+Business failures use custom exceptions.
 
-Examples
+Services must never raise HTTPException.
 
-```
-WorkerNotFoundException
-
-InsufficientWalletBalanceException
-
-AttendanceAlreadyExistsException
-
-UnauthorizedDriverException
-```
-
-Avoid raising HTTPException inside services.
-
-Only API layer converts exceptions into HTTP responses.
+The API layer converts business exceptions into HTTP responses.
 
 ---
 
-# 12. Response Format
+# 13. Response Format
 
-Every endpoint should return consistent responses.
+All endpoints must return the response format defined in **CSMS_SPEC.md**.
 
-Example
-
-```
-{
-    "success": true,
-    "message": "Worker created successfully.",
-    "data": {...}
-}
-```
-
-Error responses should follow the same structure.
+Do not invent alternate response structures.
 
 ---
 
-# 13. Pagination
+# 14. Pagination
 
-All list endpoints must support
+All list endpoints should support pagination where appropriate.
 
-- page
-- page_size
+Recommended parameters:
 
-Optional
+* page
+* page_size
 
-- search
-- sorting
-- filtering
+Optional:
 
-Never return thousands of records in one request.
-
----
-
-# 14. Logging
-
-Log
-
-- Authentication failures
-- Transaction failures
-- Unexpected exceptions
-- Critical business events
-
-Never log
-
-- Passwords
-- JWT tokens
-- Sensitive user data
+* search
+* sorting
+* filtering
 
 ---
 
-# 15. Soft Delete
+# 15. Logging
 
-Entities that maintain historical data should use soft delete.
+Log:
 
-Examples
+* Authentication failures
+* Authorization failures
+* Transaction failures
+* Unexpected exceptions
+* Critical business events
 
-- Users
-- Workers
+Never log:
 
-Deleted records should remain queryable for historical reports.
+* Passwords
+* Tokens
+* Secrets
+* Sensitive personal data
 
 ---
 
-# 16. Naming Conventions
+# 16. Soft Delete
 
-Database
+Use soft delete only where explicitly defined in CSMS_SPEC.md.
 
-snake_case
+Do not introduce soft delete without specification approval.
 
-Tables
+---
 
-Plural
+# 17. Naming Conventions
 
-Columns
+## Database
 
-snake_case
+* snake_case tables
+* snake_case columns
 
-Python
+## Python
 
 Classes
 
-PascalCase
+* PascalCase
+
+Functions
+
+* snake_case
 
 Variables
 
-camel_case
+* snake_case
 
 Constants
 
-UPPER_CASE
+* UPPER_CASE
 
 ---
 
-# 17. SQLAlchemy Rules
+# 18. SQLAlchemy Rules
 
-Use
+Use:
 
-- SQLAlchemy 2.0 style
-- Typed ORM models
-- Relationships
-- Lazy loading only where appropriate
+* SQLAlchemy 2.x ORM
+* Typed models
+* Relationships
+* Appropriate eager/lazy loading
 
-Avoid
+Avoid:
 
-- raw SQL unless necessary
-- duplicated queries
-
----
-
-# 18. API Design
-
-REST conventions
-
-```
-GET
-
-POST
-
-PUT
-
-PATCH
-
-DELETE
-```
-
-Plural resources
-
-```
-/workers
-
-/sites
-
-/expenses
-```
-
-Use nouns.
-
-Avoid verbs.
+* Raw SQL unless justified
+* Duplicate queries
 
 ---
 
-# 19. Code Quality
+# 19. API Design
 
-Every function should
+Follow REST conventions.
 
-- have one responsibility
-- include type hints
-- be readable
-- avoid duplication
+Use:
 
-Prefer small services over very large classes.
+* GET
+* POST
+* PUT
+* PATCH
+* DELETE
+
+Resources should:
+
+* Use plural nouns
+* Avoid verbs
+* Follow endpoint definitions in CSMS_SPEC.md
 
 ---
 
-# 20. Testing Requirements
+# 20. Testing
 
-Every completed feature should include
+Every completed feature should include appropriate:
 
-- Unit Tests
-- Repository Tests
-- API Tests
+* Unit tests
+* Repository tests
+* API tests
 
-Critical business workflows should include transaction tests.
+Business rules should primarily be tested at the Service layer.
+
+Critical transactional workflows should include transaction tests.
 
 ---
 
 # 21. Performance
 
-Avoid
+Avoid:
 
-- N+1 queries
-- duplicate database calls
-- unnecessary commits
+* N+1 queries
+* Duplicate database calls
+* Unnecessary commits
 
-Use eager loading only when beneficial.
-
----
-
-# 22. AI Agent Rules
-
-The AI Agent must never
-
-- invent database tables
-- invent business rules
-- invent user roles
-- invent workflows
-- change folder structure
-- change project dependencies
-- bypass repositories
-- bypass services
-
-When information is missing,
-
-STOP.
-
-Do not guess.
-
-Request clarification.
+Optimize only when measurable benefits exist.
 
 ---
 
-# 23. Source of Truth
+# 22. Configuration
 
-The following documents are authoritative.
+Application configuration must come from environment variables.
 
-| Document                         | Purpose                                              |
-| -------------------------------- | ---------------------------------------------------- |
-| Construction_System_Design_v2.md | Business rules, workflows, entities, database schema |
-| 01_PROJECT.md                    | Project overview and architecture                    |
-| project-structure.txt            | Folder structure                                     |
-| requirements.txt                 | Dependencies                                         |
-| DEVELOPMENT_LOG.md               | Project history                                      |
+Do not hardcode:
 
-This document defines implementation standards only.
-
-It must never duplicate or override the functional requirements defined in the System Design document.
+* Secrets
+* Database credentials
+* JWT keys
+* API keys
 
 ---
 
-# 24. AI Output Requirements
+# 23. Database Migrations
 
-Every implementation task must produce:
+Every schema change must include an Alembic migration.
 
-- Updated source code
-- Updated unit tests
-- Updated integration tests (if applicable)
-- Updated API documentation (if endpoints change)
-- Updated DEVELOPMENT_LOG.md
-- Migration file (if database changes)
+Do not modify production schemas manually.
 
-An implementation is not complete until all affected artifacts have been updated.
+---
+
+# 24. Idempotency
+
+Operations that may be retried or submitted multiple times must prevent unintended duplicate effects where required by CSMS_SPEC.md.
+
+---
+
+# 25. Existing Code
+
+Before creating new code:
+
+1. Inspect the existing implementation.
+2. Reuse existing abstractions where appropriate.
+3. Prefer minimal refactoring over rewriting.
+4. Remove duplicate business logic.
+5. If implementation conflicts with CSMS_SPEC.md, explain the conflict and perform the minimum refactor required.
+
+Do not preserve incorrect behavior simply because it already exists.
+
+---
+
+# 26. AI Agent Rules
+
+AI agents must never:
+
+* Invent business rules
+* Invent workflows
+* Invent user roles
+* Invent APIs
+* Invent database schema
+* Change architecture
+* Change dependencies
+* Bypass Services
+* Bypass Repositories
+
+When requirements are unclear:
+
+* Stop.
+* Explain the ambiguity.
+* Request clarification before implementation.
+
+---
+
+# 27. Source of Truth
+
+Documents are authoritative in this order:
+
+1. CSMS_SPEC.md
+2. BACKEND_RULES.md
+3. requirements.txt
+
+---
+
+# 28. Documentation Policy
+
+When implementation changes require documentation updates:
+
+* Update CSMS_SPEC.md for functional changes.
+* Update requirements.txt for dependency changes.
+* Generate Alembic migrations for schema changes.
+
+Keep documentation synchronized with implementation.
+
+---
+
+# 29. Definition of Done
+
+A feature is complete only when:
+
+* It complies with CSMS_SPEC.md.
+* It follows BACKEND_RULES.md.
+* Business rules are satisfied.
+* Authorization and validation are complete.
+* Required tests pass.
+* Required migrations are included.
+* Documentation is updated where applicable.
