@@ -1,17 +1,15 @@
-"""StockRepository — placeholder.
+"""StockRepository for StockMovement entity.
 
-Implementation pending Phase 6 — Warehouse & Inventory Management.
+Per CSMS_SPEC.md §6.14
 """
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repositories.base import BaseRepository
 
 
 class StockRepository(BaseRepository):
-    """Repository for WarehouseStock and StockMovement database operations."""
+    """Repository for StockMovement database operations."""
 
-    def __init__(self, db: Session) -> None:
+    def __init__(self, db: AsyncSession) -> None:
         super().__init__(db)
-
-    # TODO: Implement stock-specific queries.

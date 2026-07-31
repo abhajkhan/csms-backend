@@ -1,9 +1,9 @@
-"""UserRepository — placeholder.
+"""UserRepository for User entity.
 
-Implementation pending Phase 1 — Auth & User Management.
+Per CSMS_SPEC.md §6.1
 """
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repositories.base import BaseRepository
 
@@ -11,7 +11,5 @@ from app.repositories.base import BaseRepository
 class UserRepository(BaseRepository):
     """Repository for all User-related database operations."""
 
-    def __init__(self, db: Session) -> None:
+    def __init__(self, db: AsyncSession) -> None:
         super().__init__(db)
-
-    # TODO: Implement user-specific queries.

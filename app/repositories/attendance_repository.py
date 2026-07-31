@@ -1,17 +1,15 @@
-"""AttendanceRepository — placeholder.
+"""AttendanceRepository for Attendance entity.
 
-Implementation pending Phase 3 — Attendance Management.
+Per CSMS_SPEC.md §6.5
 """
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repositories.base import BaseRepository
 
 
 class AttendanceRepository(BaseRepository):
-    """Repository for all Attendance-related database operations."""
+    """Repository for Attendance database operations."""
 
-    def __init__(self, db: Session) -> None:
+    def __init__(self, db: AsyncSession) -> None:
         super().__init__(db)
-
-    # TODO: Implement attendance-specific queries.

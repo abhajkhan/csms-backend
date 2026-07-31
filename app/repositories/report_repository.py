@@ -1,17 +1,15 @@
-"""ReportRepository — placeholder.
+"""ReportRepository for aggregation and analytics queries.
 
-Implementation pending Phase 7 — Reporting.
+Per CSMS_SPEC.md §11.7
 """
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repositories.base import BaseRepository
 
 
 class ReportRepository(BaseRepository):
-    """Repository for read-only reporting queries."""
+    """Repository for reporting query operations."""
 
-    def __init__(self, db: Session) -> None:
+    def __init__(self, db: AsyncSession) -> None:
         super().__init__(db)
-
-    # TODO: Implement report-specific queries.

@@ -1,17 +1,15 @@
-"""WorkerRepository — placeholder.
+"""WorkerRepository for Worker entity.
 
-Implementation pending Phase 2 — Worker Management.
+Per CSMS_SPEC.md §6.4
 """
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repositories.base import BaseRepository
 
 
 class WorkerRepository(BaseRepository):
-    """Repository for all Worker-related database operations."""
+    """Repository for Worker database operations."""
 
-    def __init__(self, db: Session) -> None:
+    def __init__(self, db: AsyncSession) -> None:
         super().__init__(db)
-
-    # TODO: Implement worker-specific queries.

@@ -1,17 +1,15 @@
-"""WarehouseRepository — placeholder.
+"""WarehouseRepository for Warehouse, WarehouseItem, WarehouseStock entities.
 
-Implementation pending Phase 6 — Warehouse & Inventory Management.
+Per CSMS_SPEC.md §6.11, §6.12, §6.13
 """
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repositories.base import BaseRepository
 
 
 class WarehouseRepository(BaseRepository):
-    """Repository for Warehouse and WarehouseItem database operations."""
+    """Repository for Warehouse database operations."""
 
-    def __init__(self, db: Session) -> None:
+    def __init__(self, db: AsyncSession) -> None:
         super().__init__(db)
-
-    # TODO: Implement warehouse-specific queries.

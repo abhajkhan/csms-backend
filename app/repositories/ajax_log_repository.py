@@ -1,6 +1,6 @@
-"""PurchaseRepository for Purchase entity.
+"""AjaxLogRepository for AjaxDriverLog entity.
 
-Per CSMS_SPEC.md §6.15
+Per CSMS_SPEC.md §6.9 & §12
 """
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -8,8 +8,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.repositories.base import BaseRepository
 
 
-class PurchaseRepository(BaseRepository):
-    """Repository for Purchase database operations."""
+class AjaxLogRepository(BaseRepository):
+    """Repository for AjaxDriverLog database operations."""
 
     def __init__(self, db: AsyncSession) -> None:
         super().__init__(db)

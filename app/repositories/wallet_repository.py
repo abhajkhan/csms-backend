@@ -1,17 +1,15 @@
-"""WalletRepository — placeholder.
+"""WalletRepository for SupervisorBalanceLog entity.
 
-Implementation pending Phase 4 — Supervisor Wallet & Worker Payments.
+Per CSMS_SPEC.md §6.6
 """
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repositories.base import BaseRepository
 
 
 class WalletRepository(BaseRepository):
-    """Repository for SupervisorBalanceLog and WorkerPayment database operations."""
+    """Repository for SupervisorBalanceLog database operations."""
 
-    def __init__(self, db: Session) -> None:
+    def __init__(self, db: AsyncSession) -> None:
         super().__init__(db)
-
-    # TODO: Implement wallet-specific queries.
