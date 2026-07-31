@@ -1,18 +1,17 @@
 """API v1 router.
 
-Aggregates all endpoint routers under the ``/api/v1`` prefix defined in
-``app.main``.  Only add a router here once the corresponding endpoint module
-has at least one route implemented.
+Aggregates all endpoint routers under the ``/api/v1`` prefix per CSMS_SPEC.md §11.7.
 """
 
 from fastapi import APIRouter
 
 from app.api.v1.endpoints import (
+    ajax_logs,
     attendance,
     auth,
     dashboard,
-    drivers,
     expenses,
+    hitachi_logs,
     purchases,
     reports,
     sites,
@@ -55,9 +54,12 @@ api_router.include_router(
     purchases.router, prefix="/purchases", tags=["Purchases"]
 )
 
-# ─── Driver Logs & Worker Payments ───────────────────────────────────────────
+# ─── Driver Logs ─────────────────────────────────────────────────────────────
 api_router.include_router(
-    drivers.router, prefix="", tags=["Drivers"]
+    ajax_logs.router, prefix="/ajax-logs", tags=["Ajax Driver Logs"]
+)
+api_router.include_router(
+    hitachi_logs.router, prefix="/hitachi-logs", tags=["Hitachi Driver Logs"]
 )
 
 # ─── Reports ─────────────────────────────────────────────────────────────────
