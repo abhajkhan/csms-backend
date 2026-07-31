@@ -5,30 +5,30 @@ Provides:
     ``get_db``       — FastAPI dependency that yields a scoped session per request.
 """
 
-from collections.abc import Generator
+from collections.abc import AsyncGenerator
 
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.db.database import engine
 
-SessionLocal: sessionmaker[Session] = sessionmaker(
+SessionLocal = async_sessionmaker(
+    bind=engine,
+    class_=AsyncSession,
     autocommit=False,
     autoflush=False,
-    bind=engine,
+    expire_on_commit=False,
 )
 
 
-def get_db() -> Generator[Session, None, None]:
-    """Yield a database session, closing it on completion or error.
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
+    """Yield an async database session, closing it on completion or error.
 
     Usage::
 
         @router.get("/example")
-        def example(db: Session = Depends(get_db)):
+        async def example(db: AsyncSession = Depends(get_db)):
             ...
     """
-    db: Session = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+    async with SessionLocal() as session:
+        yield session
+

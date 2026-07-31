@@ -38,7 +38,6 @@ from dataclasses import dataclass
 from typing import Any, Callable, Generic, TypeVar
 
 from sqlalchemy import func, select
-from sqlalchemy.orm import Session
 from sqlalchemy.sql import Select
 
 T = TypeVar("T")
@@ -159,12 +158,15 @@ class PaginatedResult(Generic[T]):
 # ─── SQLAlchemy 2.0 paginator ─────────────────────────────────────────────────
 
 
-def paginate(
-    db: Session,
+from sqlalchemy.ext.asyncio import AsyncSession
+
+
+async def async_paginate(
+    db: AsyncSession,
     stmt: Select[Any],
     params: PaginationParams,
 ) -> PaginatedResult[Any]:
-    """Execute a paginated SQLAlchemy 2.0 select statement.
+    """Execute a paginated SQLAlchemy 2.0 select statement asynchronously.
 
     Runs two queries:
         1. A ``COUNT(*)`` over the full result set.
@@ -174,7 +176,7 @@ def paginate(
     ``JOIN`` / ``WHERE`` clauses.
 
     Args:
-        db:     An active SQLAlchemy ``Session``.
+        db:     An active SQLAlchemy ``AsyncSession``.
         stmt:   A ``select()`` statement **without** offset/limit applied.
         params: Pagination parameters.
 
@@ -184,11 +186,12 @@ def paginate(
     Example::
 
         stmt = select(Worker).where(Worker.is_active.is_(True))
-        result = paginate(db, stmt, params)
+        result = await async_paginate(db, stmt, params)
     """
     # Total count — wrap original statement as a subquery.
     count_stmt = select(func.count()).select_from(stmt.subquery())
-    total: int = db.execute(count_stmt).scalar_one()
+    total_res = await db.execute(count_stmt)
+    total: int = total_res.scalar_one()
 
     if total == 0:
         return PaginatedResult(
@@ -197,7 +200,8 @@ def paginate(
 
     # Paginated fetch.
     paginated_stmt = stmt.offset(params.offset).limit(params.limit)
-    items: list[Any] = list(db.execute(paginated_stmt).scalars().all())
+    res = await db.execute(paginated_stmt)
+    items: list[Any] = list(res.scalars().all())
 
     return PaginatedResult(
         items=items,
@@ -205,6 +209,11 @@ def paginate(
         page=params.page,
         page_size=params.page_size,
     )
+
+
+# Backwards compatibility alias
+paginate = async_paginate
+
 
 
 # ─── In-memory list paginator ─────────────────────────────────────────────────
