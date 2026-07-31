@@ -1,81 +1,74 @@
-"""Pytest configuration and shared fixtures.
+"""Pytest configuration and shared async fixtures.
 
 Provides:
-    ``client``       — TestClient with a real in-process app (no DB required).
-    ``db_session``   — SQLite in-memory session for unit tests that need the DB.
-
-The default ``client`` fixture uses the real FastAPI app without overriding
-the database dependency, which is sufficient for testing unauthenticated
-endpoints like ``/health`` that do not touch the database.
-
-For tests that require database access, use the ``db_session`` fixture
-and override the ``get_db`` dependency via ``app.dependency_overrides``.
+    ``client``       — AsyncClient for testing API endpoints.
+    ``db_session``   — AsyncSession for unit tests that need DB access.
 """
 
+from collections.abc import AsyncGenerator, Generator
+
 import pytest
-from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+import pytest_asyncio
+from httpx import ASGITransport, AsyncClient
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
 
 from app.db.base import Base
 from app.db.session import get_db
 from app.main import app
 
-# ─── In-memory SQLite for isolated unit tests ────────────────────────────────
+_SQLITE_URL = "sqlite+aiosqlite:///:memory:"
 
-_SQLITE_URL = "sqlite:///:memory:"
-
-_test_engine = create_engine(
+_test_engine = create_async_engine(
     _SQLITE_URL,
     connect_args={"check_same_thread": False},
     poolclass=StaticPool,
 )
-_TestingSessionLocal = sessionmaker(
+
+_TestingSessionLocal = async_sessionmaker(
+    bind=_test_engine,
+    class_=AsyncSession,
     autocommit=False,
     autoflush=False,
-    bind=_test_engine,
+    expire_on_commit=False,
 )
 
 
-# ─── Fixtures ────────────────────────────────────────────────────────────────
-
-
-@pytest.fixture(scope="session")
-def db_engine():
+@pytest_asyncio.fixture(scope="session", autouse=True)
+async def prepare_database():
     """Create all tables once for the test session, then drop them."""
-    Base.metadata.create_all(bind=_test_engine)
-    yield _test_engine
-    Base.metadata.drop_all(bind=_test_engine)
+    async with _test_engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    yield
+    async with _test_engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
 
 
-@pytest.fixture
-def db_session(db_engine):
-    """Yield a database session wrapped in a rolled-back transaction."""
-    connection = db_engine.connect()
-    transaction = connection.begin()
-    session = _TestingSessionLocal(bind=connection)
-
-    yield session
-
-    session.close()
-    transaction.rollback()
-    connection.close()
+@pytest_asyncio.fixture
+async def db_session() -> AsyncGenerator[AsyncSession, None]:
+    """Yield an async database session for isolated testing."""
+    async with _TestingSessionLocal() as session:
+        yield session
 
 
-@pytest.fixture
-def client():
-    """Return a TestClient for the FastAPI app (no DB override)."""
-    return TestClient(app)
+@pytest_asyncio.fixture
+async def client() -> AsyncGenerator[AsyncClient, None]:
+    """Return an AsyncClient for testing endpoints."""
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as ac:
+        yield ac
 
 
-@pytest.fixture
-def db_client(db_session):
-    """Return a TestClient with the DB dependency overridden to use SQLite."""
-
-    def _override_get_db():
+@pytest_asyncio.fixture
+async def db_client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
+    """Return an AsyncClient with the DB dependency overridden."""
+    async def _override_get_db() -> AsyncGenerator[AsyncSession, None]:
         yield db_session
 
     app.dependency_overrides[get_db] = _override_get_db
-    yield TestClient(app)
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as ac:
+        yield ac
     del app.dependency_overrides[get_db]
