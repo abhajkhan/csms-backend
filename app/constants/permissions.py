@@ -5,8 +5,8 @@ Each constant maps to one guarded action in the system.
 
 Convention: ``PERM_<RESOURCE>_<ACTION>``
 
-Per 02_BACKEND_RULES.md §9 Authorization and
-Construction_System_Design_v2.md §3 User Roles.
+Per 02_BACKEND_RULES.md §10 Authorization and
+CSMS_SPEC.md §5 User Roles.
 """
 
 # ─── User management ─────────────────────────────────────────────────────────

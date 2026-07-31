@@ -1,6 +1,6 @@
 """Purchase ORM model.
 
-Table: ``purchases`` (§4.15)
+Table: ``purchases`` (§6.15)
 
 Records every material purchase made by a normal driver.  Each row
 captures who bought what, from where, the destination (site or
@@ -9,7 +9,7 @@ warehouse), vehicle details, and pricing.
 Auto-creates related ``Expense`` entries for driver_material,
 driver_bata (own vehicle), and driver_vehicle_rent (outer vehicle).
 
-Design reference: Construction_System_Design_v2.md §4.15.
+Design reference: CSMS_SPEC.md §6.15.
 """
 
 from __future__ import annotations

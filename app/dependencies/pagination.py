@@ -5,18 +5,18 @@ Parses and validates pagination query parameters from incoming requests.
 Usage::
 
     from app.dependencies.pagination import get_pagination
-    from app.utils.pagination import PaginationParams, paginate
+    from app.utils.pagination import PaginationParams, async_paginate
 
     @router.get("/workers")
-    def list_workers(
+    async def list_workers(
         params: PaginationParams = Depends(get_pagination),
-        db: Session = Depends(get_db),
+        db: AsyncSession = Depends(get_db),
     ):
         stmt = select(Worker).order_by(Worker.worker_id)
-        result = paginate(db, stmt, params)
+        result = await async_paginate(db, stmt, params)
         return paginated_response(result)
 
-Per 02_BACKEND_RULES.md §13 Pagination.
+Per 02_BACKEND_RULES.md §14 Pagination.
 """
 
 from fastapi import Query

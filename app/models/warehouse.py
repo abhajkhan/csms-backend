@@ -2,11 +2,11 @@
 
 Tables
 ------
-- ``warehouses``        (§4.11) — physical storage locations.
-- ``warehouse_items``   (§4.12) — catalogue of trackable materials.
-- ``warehouse_stocks``  (§4.13) — per-warehouse item quantities.
+- ``warehouses``        (§6.11) — physical storage locations.
+- ``warehouse_items``   (§6.12) — catalogue of trackable materials.
+- ``warehouse_stocks``  (§6.13) — per-warehouse item quantities.
 
-Design reference: Construction_System_Design_v2.md §4.11–§4.13.
+Design reference: CSMS_SPEC.md §6.11–§6.13.
 """
 
 from __future__ import annotations

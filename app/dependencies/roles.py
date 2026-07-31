@@ -18,21 +18,21 @@ Usage::
     from app.dependencies.roles import require_admin, require_supervisor
 
     @router.post("/sites", status_code=201)
-    def create_site(
+    async def create_site(
         current_user: CurrentUserResponse = Depends(require_admin),
-        db: Session = Depends(get_db),
+        db: AsyncSession = Depends(get_db),
     ):
         ...
 
     @router.post("/attendance")
-    def mark_attendance(
+    async def mark_attendance(
         current_user: CurrentUserResponse = Depends(require_supervisor),
-        db: Session = Depends(get_db),
+        db: AsyncSession = Depends(get_db),
     ):
         ...
 
-Per 02_BACKEND_RULES.md §9 Authorization and
-Construction_System_Design_v2.md §3 User Roles.
+Per 02_BACKEND_RULES.md §10 Authorization and
+CSMS_SPEC.md §5 User Roles.
 """
 
 from __future__ import annotations

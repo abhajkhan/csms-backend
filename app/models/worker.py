@@ -1,14 +1,11 @@
 """Worker ORM model.
 
 Table: ``workers``
-Design reference: Construction_System_Design_v2.md §4.4
+Design reference: CSMS_SPEC.md §6.4
 
 Workers are casual labourers hired per-site.  Each record tracks
 the worker's name, daily wage, and the user who created them.
 ``is_active`` acts as a soft-delete flag.
-
-No ``created_at`` / ``updated_at`` columns are specified in the
-design document, so ``TimestampMixin`` is intentionally omitted.
 """
 
 from __future__ import annotations

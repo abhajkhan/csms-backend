@@ -1,6 +1,6 @@
 """Expense ORM model — unified expense ledger.
 
-Table: ``expenses``  (§4.8)
+Table: ``expenses``  (§6.8)
     Central record for every expense incurred on a site.  Rows are
     auto-created by service-layer logic when an ``AjaxDriverLog``,
     ``HitachiDriverLog``, ``StockMovement`` (OUT), or ``Purchase``
@@ -10,7 +10,7 @@ Table: ``expenses``  (§4.8)
     link back to the originating record, enabling drill-down from the
     expense ledger into the source domain table.
 
-Design reference: Construction_System_Design_v2.md §4.8
+Design reference: CSMS_SPEC.md §6.8
 """
 
 from __future__ import annotations
@@ -46,7 +46,7 @@ if TYPE_CHECKING:
 class Expense(Base):
     """Single expense entry linked to a site.
 
-    Design ref: Construction_System_Design_v2.md §4.8
+    Design ref: CSMS_SPEC.md §6.8
     """
 
     __tablename__ = "expenses"

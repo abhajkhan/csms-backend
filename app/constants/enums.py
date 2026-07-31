@@ -1,13 +1,13 @@
 """Domain enum constants for CSMS.
 
-All enum values are sourced directly from Construction_System_Design_v2.md.
+All enum values are sourced directly from CSMS_SPEC.md.
 
 Using ``str`` as the mixin ensures:
     - Values serialise to plain strings in JSON (Pydantic / FastAPI).
     - Values can be stored as VARCHAR in PostgreSQL without a separate type.
     - Enum members compare equal to their raw string values.
 
-Per 02_BACKEND_RULES.md §16 Naming Conventions.
+Per 02_BACKEND_RULES.md §17 Naming Conventions.
 """
 
 from enum import Enum
@@ -18,7 +18,7 @@ from enum import Enum
 class UserRole(str, Enum):
     """Top-level role for every account in the system.
 
-    Design ref: Construction_System_Design_v2.md §4.1 Users.
+    Design ref: CSMS_SPEC.md §6.1 Users.
     """
 
     ADMIN = "admin"
@@ -30,7 +30,7 @@ class DriverType(str, Enum):
     """Sub-type that differentiates the three driver roles.
 
     Only meaningful when ``Users.role == UserRole.DRIVER``.
-    Design ref: Construction_System_Design_v2.md §2.1.
+    Design ref: CSMS_SPEC.md §5 User Roles.
     """
 
     HITACHI = "hitachi"
@@ -44,7 +44,7 @@ class DriverType(str, Enum):
 class SiteStatus(str, Enum):
     """Lifecycle status of a construction site.
 
-    Design ref: Construction_System_Design_v2.md §4.2 Site.
+    Design ref: CSMS_SPEC.md §6.2 Site.
     """
 
     ACTIVE = "active"
@@ -58,7 +58,7 @@ class SiteStatus(str, Enum):
 class LabourType(str, Enum):
     """Discriminator for the polymorphic ``Attendance.labour_id`` column.
 
-    Design ref: Construction_System_Design_v2.md §4.5 Attendance.
+    Design ref: CSMS_SPEC.md §6.5 Attendance.
     """
 
     USER = "USER"
@@ -68,7 +68,7 @@ class LabourType(str, Enum):
 class AttendanceStatus(str, Enum):
     """Daily attendance state for any labour record.
 
-    Design ref: Construction_System_Design_v2.md §4.5 Attendance.
+    Design ref: CSMS_SPEC.md §6.5 Attendance.
     """
 
     PRESENT = "present"
@@ -82,7 +82,7 @@ class AttendanceStatus(str, Enum):
 class TxnType(str, Enum):
     """Transaction direction in the supervisor balance ledger.
 
-    Design ref: Construction_System_Design_v2.md §4.6 SupervisorBalanceLog.
+    Design ref: CSMS_SPEC.md §6.6 SupervisorBalanceLog.
     """
 
     CREDIT = "credit"
@@ -92,7 +92,7 @@ class TxnType(str, Enum):
 class PaymentType(str, Enum):
     """Category of a worker payment record.
 
-    Design ref: Construction_System_Design_v2.md §4.7 WorkerPayment.
+    Design ref: CSMS_SPEC.md §6.7 WorkerPayment.
     """
 
     ADVANCE = "advance"
@@ -105,7 +105,7 @@ class PaymentType(str, Enum):
 class ExpenseType(str, Enum):
     """Source category of an expense entry.
 
-    Design ref: Construction_System_Design_v2.md §4.8 Expense, §2.5.
+    Design ref: CSMS_SPEC.md §6.8 Expense.
     """
 
     MATERIAL_TRANSFER = "material_transfer"
@@ -121,7 +121,7 @@ class ExpenseType(str, Enum):
 class ReferenceType(str, Enum):
     """Source table that an expense's ``reference_id`` points to.
 
-    Design ref: Construction_System_Design_v2.md §4.8 Expense, §2.5.
+    Design ref: CSMS_SPEC.md §6.8 Expense.
     """
 
     STOCK_MOVEMENT = "stock_movement"
@@ -136,7 +136,7 @@ class ReferenceType(str, Enum):
 class MovementType(str, Enum):
     """Direction of a warehouse stock movement.
 
-    Design ref: Construction_System_Design_v2.md §4.14 StockMovement.
+    Design ref: CSMS_SPEC.md §6.14 StockMovement.
     """
 
     IN = "IN"
@@ -146,7 +146,7 @@ class MovementType(str, Enum):
 class ItemCategory(str, Enum):
     """Material category for warehouse items.
 
-    Design ref: Construction_System_Design_v2.md §4.12 WarehouseItem.
+    Design ref: CSMS_SPEC.md §6.12 WarehouseItem.
     """
 
     CEMENT = "cement"
@@ -163,7 +163,7 @@ class ItemCategory(str, Enum):
 class DestinationType(str, Enum):
     """Destination of a normal-driver purchase.
 
-    Design ref: Construction_System_Design_v2.md §4.15 Purchase.
+    Design ref: CSMS_SPEC.md §6.15 Purchase.
     """
 
     SITE = "site"
@@ -177,7 +177,7 @@ class VehicleType(str, Enum):
     ``OUTER`` — an external vehicle is hired; rent stored as separate expense.
     ``NONE``  — no vehicle cost applies.
 
-    Design ref: Construction_System_Design_v2.md §4.15 Purchase, §8 Normal Driver Bata.
+    Design ref: CSMS_SPEC.md §6.15 Purchase, §8.6 Normal Driver Bata.
     """
 
     OWN = "own"

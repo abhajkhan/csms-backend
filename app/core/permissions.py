@@ -4,11 +4,11 @@ Provides **pure functions** for role and driver-type checks.
 These functions take primitive values (strings/enums) and return booleans —
 they have no side effects and no database access.
 
-The FastAPI dependency layer (``app.dependencies.roles``) will build on top
-of these helpers once auth is implemented in Phase 1.
+The FastAPI dependency layer (``app.dependencies.roles``) builds on top
+of these helpers.
 
-Per 02_BACKEND_RULES.md §9 Authorization and
-Construction_System_Design_v2.md §3 User Roles.
+Per 02_BACKEND_RULES.md §10 Authorization and
+CSMS_SPEC.md §5 User Roles.
 
 Usage (in a service)::
 

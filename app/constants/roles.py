@@ -4,7 +4,7 @@ Defines which roles and driver-types are allowed for each system capability.
 These frozensets are used by ``app.core.permissions`` and by the RBAC
 dependency layer.
 
-Per Construction_System_Design_v2.md §3 User Roles and §7 Role Functions.
+Per CSMS_SPEC.md §5 User Roles and §10 Role Responsibilities.
 """
 
 from app.constants.enums import DriverType, UserRole
