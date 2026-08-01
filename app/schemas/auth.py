@@ -1,13 +1,12 @@
 """Authentication Pydantic schemas.
 
-Provides the request and response DTOs for every auth-related endpoint:
-    ``LoginRequest``        — POST /auth/login  request body.
-    ``TokenResponse``       — POST /auth/login  and /auth/refresh response.
-    ``RefreshRequest``      — POST /auth/refresh request body.
-    ``TokenPayloadSchema``  — Internal typed schema mirroring ``TokenPayload``.
+Provides DTOs for auth-related endpoints:
+    ``LoginRequest``           — POST /auth/login request body.
+    ``RefreshRequest``         — POST /auth/refresh request body.
+    ``TokenResponse``          — Token issuance response.
+    ``PasswordChangeRequest``  — POST /auth/change-password request body.
 
-Per 03_API_CONTRACT.md §8 Auth Module and
-02_BACKEND_RULES.md §8 Authentication.
+Per CSMS_SPEC.md §11.4 & §11.7 and 02_BACKEND_RULES.md §9.
 """
 
 from __future__ import annotations
@@ -18,12 +17,7 @@ from pydantic import BaseModel, Field, field_validator
 
 
 class LoginRequest(BaseModel):
-    """Request body for ``POST /auth/login``.
-
-    Attributes:
-        phone:    The user's registered phone number (used as login identifier).
-        password: The plain-text password (never stored or logged).
-    """
+    """Request body for ``POST /auth/login``."""
 
     phone: str = Field(
         ...,
@@ -48,11 +42,7 @@ class LoginRequest(BaseModel):
 
 
 class RefreshRequest(BaseModel):
-    """Request body for ``POST /auth/refresh``.
-
-    Attributes:
-        refresh_token: A valid, unexpired JWT refresh token.
-    """
+    """Request body for ``POST /auth/refresh``."""
 
     refresh_token: str = Field(
         ...,
@@ -60,20 +50,28 @@ class RefreshRequest(BaseModel):
     )
 
 
+class PasswordChangeRequest(BaseModel):
+    """Request body for ``POST /auth/change-password``."""
+
+    old_password: str = Field(
+        ...,
+        min_length=6,
+        max_length=128,
+        description="Current account password.",
+    )
+    new_password: str = Field(
+        ...,
+        min_length=6,
+        max_length=128,
+        description="New account password (min 6 chars).",
+    )
+
+
 # ─── Response bodies ──────────────────────────────────────────────────────────
 
 
 class TokenResponse(BaseModel):
-    """Response body for ``POST /auth/login`` and ``POST /auth/refresh``.
-
-    Both tokens are signed JWTs.  The access token is short-lived (default
-    30 min); the refresh token is long-lived (default 7 days).
-
-    Attributes:
-        access_token:  JWT for authorising API requests via ``Authorization: Bearer``.
-        refresh_token: JWT for obtaining a new access token without re-login.
-        token_type:    Always ``"bearer"``.
-    """
+    """Response body for ``POST /auth/login`` and ``POST /auth/refresh``."""
 
     access_token: str = Field(
         ...,

@@ -5,7 +5,12 @@ All request and response DTO schemas per CSMS_SPEC.md §12.
 
 from app.schemas.ajax_driver_log import AjaxDriverLogCreate, AjaxDriverLogResponse
 from app.schemas.attendance import AttendanceCreate, AttendanceResponse
-from app.schemas.auth import LoginRequest, TokenResponse
+from app.schemas.auth import (
+    LoginRequest,
+    PasswordChangeRequest,
+    RefreshRequest,
+    TokenResponse,
+)
 from app.schemas.common import StandardResponse
 from app.schemas.dashboard import DashboardResponse
 from app.schemas.expense import ExpenseCreate, ExpenseResponse
@@ -13,7 +18,13 @@ from app.schemas.hitachi_driver_log import HitachiDriverLogCreate, HitachiDriver
 from app.schemas.purchase import PurchaseCreate, PurchaseResponse
 from app.schemas.report import ReportResponse
 from app.schemas.site_supervisor import SiteSupervisorCreate, SiteSupervisorResponse
-from app.schemas.user import UserCreate, UserResponse
+from app.schemas.user import (
+    CurrentUserResponse,
+    UserCreate,
+    UserListResponse,
+    UserResponse,
+    UserUpdate,
+)
 from app.schemas.warehouse import WarehouseCreate, WarehouseResponse
 from app.schemas.worker import WorkerCreate, WorkerResponse
 from app.schemas.worker_payment import WorkerPaymentCreate, WorkerPaymentResponse
@@ -24,6 +35,8 @@ __all__ = [
     "AttendanceCreate",
     "AttendanceResponse",
     "LoginRequest",
+    "RefreshRequest",
+    "PasswordChangeRequest",
     "TokenResponse",
     "StandardResponse",
     "DashboardResponse",
@@ -36,8 +49,11 @@ __all__ = [
     "ReportResponse",
     "SiteSupervisorCreate",
     "SiteSupervisorResponse",
+    "CurrentUserResponse",
     "UserCreate",
+    "UserUpdate",
     "UserResponse",
+    "UserListResponse",
     "WarehouseCreate",
     "WarehouseResponse",
     "WorkerCreate",
