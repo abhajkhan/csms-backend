@@ -27,7 +27,9 @@ class CurrentUserResponse(BaseModel):
     phone: str = Field(..., description="Registered phone number.")
     is_active: bool = Field(default=True, description="Account active status.")
     acc_balance: Decimal | None = Field(
-        default=None, description="Current wallet/account balance."
+        default=None, 
+        examples=[1000.00],
+        description="Current wallet/account balance."
     )
 
     model_config = ConfigDict(from_attributes=True)
@@ -117,7 +119,9 @@ class UserResponse(BaseModel):
     phone: str = Field(..., description="User phone number.")
     is_active: bool = Field(..., description="Active status.")
     acc_balance: Decimal | None = Field(
-        default=None, description="Account balance."
+        default=None,
+        examples=[1000.00],
+        description="Current wallet/account balance."
     )
 
     model_config = ConfigDict(from_attributes=True)
