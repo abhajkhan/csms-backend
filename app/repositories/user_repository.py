@@ -47,14 +47,11 @@ class UserRepository(BaseRepository):
         await self.db.refresh(user)
         return user
 
-    async def deactivate(self, user_id: int) -> bool:
+    async def deactivate(self, user: User) -> User:
         """Deactivate a user account by setting `is_active = False`."""
-        user = await self.get_by_id(user_id)
-        if not user:
-            return False
         user.is_active = False
         await self.db.flush()
-        return True
+        return user
 
     async def list_all(
         self, params: PaginationParams
