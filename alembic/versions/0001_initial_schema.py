@@ -206,7 +206,7 @@ def upgrade() -> None:
         sa.Column('warehouse_id', sa.Integer(), nullable=False),
         sa.Column('item_id', sa.Integer(), nullable=False),
         sa.Column('quantity', sa.Numeric(precision=12, scale=2), server_default='0', nullable=False),
-        sa.Column('last_updated', sa.DateTime(timezone=True), nullable=True),
+        sa.Column('last_updated', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
         sa.ForeignKeyConstraint(['item_id'], ['warehouse_items.item_id'], ),
         sa.ForeignKeyConstraint(['warehouse_id'], ['warehouses.warehouse_id'], ),
         sa.PrimaryKeyConstraint('stock_id'),
