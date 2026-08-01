@@ -43,7 +43,7 @@ async def create_user(
 
 @router.get(
     "",
-    response_model=dict,
+    response_model=UserListResponse,
     status_code=status.HTTP_200_OK,
     summary="List all users",
     description="List all registered user accounts with pagination (Admin only).",
@@ -52,9 +52,10 @@ async def list_users(
     params: PaginationParams = Depends(get_pagination),
     current_user: CurrentUserResponse = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
-) -> dict:
+) -> UserListResponse:
     user_service = UserService(db)
-    return await user_service.list_users(current_user.role, params)
+    result = await user_service.list_users(current_user.role, params)
+    return UserListResponse(**result)
 
 
 @router.get(

@@ -3,9 +3,7 @@
 Per CSMS_SPEC.md §6.1 & 02_BACKEND_RULES.md §6.
 """
 
-from collections.abc import Sequence
-
-from sqlalchemy import func, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.user import User

@@ -100,4 +100,5 @@ class AuthService:
 
         new_hash = hash_password(req.new_password)
         await self.user_repo.update(user, {"password_hash": new_hash})
+        await self.db.commit()
         return True

@@ -52,7 +52,9 @@ class UserService:
             acc_balance=user_in.acc_balance,
             is_active=True,
         )
-        return await self.user_repo.create(user)
+        created_user = await self.user_repo.create(user)
+        await self.db.commit()
+        return created_user
 
     async def get_user_by_id(
         self, requester_id: int, requester_role: UserRole | str, target_id: int
@@ -105,7 +107,9 @@ class UserService:
         if not user:
             raise UserNotFoundException(target_id)
 
-        return await self.user_repo.deactivate(target_id)
+        result = await self.user_repo.deactivate(target_id)
+        await self.db.commit()
+        return result
 
     async def list_users(
         self, requester_role: UserRole | str, params: PaginationParams
