@@ -1,8 +1,11 @@
-"""Purchase Pydantic schemas — placeholder.
+"""Purchase Pydantic schemas."""
 
-Implementation pending Phase 5 — Normal Driver Purchase Management.
-"""
-
+from pydantic import BaseModel
 
 
-# TODO: Implement purchase schemas.
+class PurchaseCreate(BaseModel):
+    pass
+
+
+class PurchaseResponse(BaseModel):
+    pass

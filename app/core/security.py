@@ -32,6 +32,7 @@ Security notes:
 
 from __future__ import annotations
 
+import uuid
 from dataclasses import dataclass
 from datetime import timedelta
 
@@ -131,6 +132,7 @@ def _make_token(
         "role": role,
         "driver_type": driver_type,
         "type": token_type,
+        "jti": uuid.uuid4().hex,
         # Standard claims — python-jose encodes datetimes as Unix timestamps.
         "iat": now,
         "exp": expire,

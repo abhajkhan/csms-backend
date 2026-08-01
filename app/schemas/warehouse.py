@@ -1,8 +1,11 @@
-"""Warehouse Pydantic schemas — placeholder.
+"""Warehouse Pydantic schemas."""
 
-Implementation pending Phase 6 — Warehouse & Inventory Management.
-"""
-
+from pydantic import BaseModel
 
 
-# TODO: Implement warehouse, item, stock, and movement schemas.
+class WarehouseCreate(BaseModel):
+    pass
+
+
+class WarehouseResponse(BaseModel):
+    pass

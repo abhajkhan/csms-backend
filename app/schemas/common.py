@@ -16,18 +16,18 @@ from pydantic import BaseModel, Field, field_validator
 DataT = TypeVar("DataT")
 
 
-# ─── Success envelope ────────────────────────────────────────────────────────
+# ─── Success envelopes ───────────────────────────────────────────────────────
+
+
+class StandardResponse(BaseModel):
+    """Standard generic response envelope with success flag and message."""
+
+    success: bool = True
+    message: str = "Operation completed successfully."
 
 
 class APIResponse(BaseModel, Generic[DataT]):
-    """Standard success response envelope.
-
-    Used as the ``response_model`` on FastAPI route decorators::
-
-        @router.get("/workers/{id}", response_model=APIResponse[WorkerResponse])
-        def get_worker(...):
-            ...
-    """
+    """Standard success response envelope."""
 
     success: bool = True
     message: str = "Operation completed successfully."
@@ -38,10 +38,7 @@ class APIResponse(BaseModel, Generic[DataT]):
 
 
 class APIError(BaseModel):
-    """Standard error response envelope.
-
-    Returned by exception handlers via ``JSONResponse(content=error_response(...))``.
-    """
+    """Standard error response envelope."""
 
     success: bool = False
     message: str
@@ -52,14 +49,7 @@ class APIError(BaseModel):
 
 
 class PaginationMeta(BaseModel):
-    """Metadata describing a paginated result set.
-
-    Attributes:
-        page:        Current page number (1-indexed).
-        page_size:   Number of items per page.
-        total:       Total count of matching records.
-        total_pages: Total number of pages.
-    """
+    """Metadata describing a paginated result set."""
 
     page: int = Field(..., ge=1)
     page_size: int = Field(..., ge=1)
@@ -74,14 +64,7 @@ class PaginationMeta(BaseModel):
 
 
 class PaginatedResponse(BaseModel, Generic[DataT]):
-    """Standard paginated list response envelope.
-
-    Used as the ``response_model`` on list endpoints::
-
-        @router.get("/workers", response_model=PaginatedResponse[WorkerResponse])
-        def list_workers(...):
-            ...
-    """
+    """Standard paginated list response envelope."""
 
     success: bool = True
     message: str = "OK"
@@ -93,10 +76,7 @@ class PaginatedResponse(BaseModel, Generic[DataT]):
 
 
 class NoContentResponse(BaseModel):
-    """Schema for successful operations with no return body (e.g. DELETE).
-
-    Pair with ``status_code=204`` in the route decorator.
-    """
+    """Schema for successful operations with no return body (e.g. DELETE)."""
 
     success: bool = True
     message: str = "Resource deleted successfully."

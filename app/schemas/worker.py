@@ -1,8 +1,11 @@
-"""Worker Pydantic schemas — placeholder.
+"""Worker Pydantic schemas."""
 
-Implementation pending Phase 2 — Worker Management.
-"""
-
+from pydantic import BaseModel
 
 
-# TODO: Implement worker schemas.
+class WorkerCreate(BaseModel):
+    pass
+
+
+class WorkerResponse(BaseModel):
+    pass

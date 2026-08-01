@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.user import User
 from app.repositories.base import BaseRepository
-from app.utils.pagination import PaginationParams, async_paginate, paginated_response
+from app.utils.pagination import PaginatedResult, PaginationParams, async_paginate
 
 
 class UserRepository(BaseRepository):
@@ -60,8 +60,7 @@ class UserRepository(BaseRepository):
 
     async def list_all(
         self, params: PaginationParams
-    ) -> dict:
+    ) -> PaginatedResult[User]:
         """List users with pagination."""
         stmt = select(User).order_by(User.user_id)
-        paginated_result = await async_paginate(self.db, stmt, params)
-        return paginated_response(paginated_result)
+        return await async_paginate(self.db, stmt, params)

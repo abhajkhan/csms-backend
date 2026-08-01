@@ -1,8 +1,7 @@
-"""Dashboard Pydantic schemas — placeholder.
+"""Dashboard Pydantic schemas."""
 
-Implementation pending Phase 7 — Dashboard.
-"""
-
+from pydantic import BaseModel
 
 
-# TODO: Implement dashboard response schemas.
+class DashboardResponse(BaseModel):
+    pass

@@ -1,8 +1,11 @@
-"""Expense Pydantic schemas — placeholder.
+"""Expense Pydantic schemas."""
 
-Implementation pending Phase 4 — Expense Management.
-"""
-
+from pydantic import BaseModel
 
 
-# TODO: Implement expense schemas.
+class ExpenseCreate(BaseModel):
+    pass
+
+
+class ExpenseResponse(BaseModel):
+    pass

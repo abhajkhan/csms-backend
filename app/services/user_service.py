@@ -16,7 +16,7 @@ from app.core.exceptions import (
 from app.core.security import hash_password
 from app.models.user import User
 from app.repositories.user_repository import UserRepository
-from app.schemas.user import UserCreate, UserUpdate
+from app.schemas.user import UserCreate, UserResponse, UserUpdate
 from app.utils.pagination import PaginationParams
 
 
@@ -114,4 +114,11 @@ class UserService:
         if requester_role != UserRole.ADMIN:
             raise InsufficientRoleException(["admin"])
 
-        return await self.user_repo.list_all(params)
+        result = await self.user_repo.list_all(params)
+        return {
+            "items": [UserResponse.model_validate(u) for u in result.items],
+            "total": result.total,
+            "page": result.page,
+            "page_size": result.page_size,
+            "total_pages": result.total_pages,
+        }

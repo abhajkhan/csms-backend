@@ -1,8 +1,7 @@
-"""Report Pydantic schemas — placeholder.
+"""Report Pydantic schemas."""
 
-Implementation pending Phase 7 — Reporting.
-"""
-
+from pydantic import BaseModel
 
 
-# TODO: Implement report response schemas.
+class ReportResponse(BaseModel):
+    pass

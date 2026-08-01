@@ -1,17 +1,22 @@
 """Pytest configuration and shared async fixtures.
 
 Provides:
-    ``client``       — AsyncClient for testing API endpoints.
-    ``db_session``   — AsyncSession for unit tests that need DB access.
+    ``client``       — AsyncClient for testing API endpoints with in-memory SQLite DB.
+    ``db_session``   — AsyncSession for unit tests that need isolated DB access.
 """
 
-from collections.abc import AsyncGenerator, Generator
+import sys
+from collections.abc import AsyncGenerator
 
 import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
+
+if sys.platform == "win32":
+    import asyncio
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 from app.db.base import Base
 from app.db.session import get_db
@@ -52,17 +57,8 @@ async def db_session() -> AsyncGenerator[AsyncSession, None]:
 
 
 @pytest_asyncio.fixture
-async def client() -> AsyncGenerator[AsyncClient, None]:
-    """Return an AsyncClient for testing endpoints."""
-    async with AsyncClient(
-        transport=ASGITransport(app=app), base_url="http://test"
-    ) as ac:
-        yield ac
-
-
-@pytest_asyncio.fixture
-async def db_client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
-    """Return an AsyncClient with the DB dependency overridden."""
+async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
+    """Return an AsyncClient with the DB dependency overridden to use in-memory SQLite."""
     async def _override_get_db() -> AsyncGenerator[AsyncSession, None]:
         yield db_session
 

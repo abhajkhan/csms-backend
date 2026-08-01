@@ -1,8 +1,11 @@
-"""Attendance Pydantic schemas — placeholder.
+"""Attendance Pydantic schemas."""
 
-Implementation pending Phase 3 — Attendance Management.
-"""
-
+from pydantic import BaseModel
 
 
-# TODO: Implement attendance schemas.
+class AttendanceCreate(BaseModel):
+    pass
+
+
+class AttendanceResponse(BaseModel):
+    pass
