@@ -70,6 +70,11 @@ async def run_async_migrations() -> None:
     await connectable.dispose()
 
 
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(
+        asyncio.WindowsSelectorEventLoopPolicy()
+    )
+
 def run_migrations_online() -> None:
     """Run migrations online in async context."""
     asyncio.run(run_async_migrations())
