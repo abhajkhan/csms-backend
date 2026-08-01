@@ -94,11 +94,13 @@ class UserService:
             if existing and existing.user_id != target_id:
                 raise PhoneAlreadyRegisteredException(update_dict["phone"])
 
-        return await self.user_repo.update(user, update_dict)
+        updated_user = await self.user_repo.update(user, update_dict)
+        await self.db.commit()
+        return updated_user
 
     async def deactivate_user(
         self, requester_role: UserRole | str, target_id: int
-    ) -> bool:
+    ) -> User:
         """Deactivate a user account (Admin only)."""
         if requester_role != UserRole.ADMIN:
             raise InsufficientRoleException(["admin"])
@@ -107,9 +109,9 @@ class UserService:
         if not user:
             raise UserNotFoundException(target_id)
 
-        result = await self.user_repo.deactivate(target_id)
+        deactivated_user = await self.user_repo.deactivate(user)
         await self.db.commit()
-        return result
+        return deactivated_user
 
     async def list_users(
         self, requester_role: UserRole | str, params: PaginationParams
