@@ -63,10 +63,6 @@ class UserCreate(BaseModel):
         ...,
         description="User role (must be 'admin' or 'supervisor').",
     )
-    acc_balance: Decimal | None = Field(
-        default=None,
-        description="Initial account balance for supervisor wallet if applicable.",
-    )
 
     @field_validator("phone")
     @classmethod

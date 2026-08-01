@@ -3,6 +3,8 @@
 Per CSMS_SPEC.md §6.1, §10.1 & 02_BACKEND_RULES.md §7.
 """
 
+from decimal import Decimal
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.constants.enums import UserRole
@@ -43,13 +45,16 @@ class UserService:
         if existing:
             raise PhoneAlreadyRegisteredException(user_in.phone)
 
+        acc_balance = (
+            Decimal("0.00") if user_in.role == UserRole.SUPERVISOR else None
+        )
         password_hash = hash_password(user_in.password)
         user = User(
             role=user_in.role.value,
             full_name=user_in.full_name,
             phone=user_in.phone,
             password_hash=password_hash,
-            acc_balance=user_in.acc_balance,
+            acc_balance=acc_balance,
             is_active=True,
         )
         created_user = await self.user_repo.create(user)

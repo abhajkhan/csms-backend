@@ -44,6 +44,23 @@ async def test_admin_create_user(client: AsyncClient, db_session: AsyncSession) 
     user_data = create_res.json()
     assert user_data["phone"] == "03007777777"
     assert user_data["role"] == "supervisor"
+    assert float(user_data["acc_balance"]) == 0.0
+
+    # Test creating Admin account initializes acc_balance = None
+    create_admin_res = await client.post(
+        "/api/v1/users",
+        headers={"Authorization": f"Bearer {token}"},
+        json={
+            "full_name": "New Sub-Admin",
+            "phone": "03007777778",
+            "password": "AdminPassword123",
+            "role": "admin",
+        },
+    )
+    assert create_admin_res.status_code == 201
+    admin_data = create_admin_res.json()
+    assert admin_data["role"] == "admin"
+    assert admin_data["acc_balance"] is None
 
 
 @pytest.mark.asyncio
