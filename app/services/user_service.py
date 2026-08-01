@@ -28,7 +28,7 @@ class UserService:
         self.user_repo = UserRepository(db)
 
     async def create_user(
-        self, creator_role: UserRole | str, user_in: UserCreate
+        self, creator_role: UserRole, user_in: UserCreate
     ) -> User:
         """Register a new user account (Admin only)."""
         if creator_role != UserRole.ADMIN:
@@ -45,7 +45,7 @@ class UserService:
 
         password_hash = hash_password(user_in.password)
         user = User(
-            role=user_in.role.value if isinstance(user_in.role, UserRole) else user_in.role,
+            role=user_in.role.value,
             full_name=user_in.full_name,
             phone=user_in.phone,
             password_hash=password_hash,
@@ -57,7 +57,7 @@ class UserService:
         return created_user
 
     async def get_user_by_id(
-        self, requester_id: int, requester_role: UserRole | str, target_id: int
+        self, requester_id: int, requester_role: UserRole, target_id: int
     ) -> User:
         """Retrieve a user profile by ID with role-based access check."""
         if requester_role != UserRole.ADMIN and requester_id != target_id:
@@ -73,7 +73,7 @@ class UserService:
     async def update_user(
         self,
         requester_id: int,
-        requester_role: UserRole | str,
+        requester_role: UserRole,
         target_id: int,
         user_in: UserUpdate,
     ) -> User:
@@ -99,7 +99,7 @@ class UserService:
         return updated_user
 
     async def deactivate_user(
-        self, requester_role: UserRole | str, target_id: int
+        self, requester_role: UserRole, target_id: int
     ) -> User:
         """Deactivate a user account (Admin only)."""
         if requester_role != UserRole.ADMIN:
@@ -114,7 +114,7 @@ class UserService:
         return deactivated_user
 
     async def list_users(
-        self, requester_role: UserRole | str, params: PaginationParams
+        self, requester_role: UserRole, params: PaginationParams
     ) -> dict:
         """List all users with pagination (Admin only)."""
         if requester_role != UserRole.ADMIN:
