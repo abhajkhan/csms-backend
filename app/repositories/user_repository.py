@@ -3,9 +3,10 @@
 Per CSMS_SPEC.md §6.1 & 02_BACKEND_RULES.md §6.
 """
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.constants.enums import UserRole
 from app.models.user import User
 from app.repositories.base import BaseRepository
 from app.utils.pagination import PaginatedResult, PaginationParams, async_paginate
@@ -52,6 +53,22 @@ class UserRepository(BaseRepository):
         user.is_active = False
         await self.db.flush()
         return user
+
+    async def activate(self, user: User) -> User:
+        """Reactivate a user account by setting `is_active = True`."""
+        user.is_active = True
+        await self.db.flush()
+        return user
+
+    async def count_active_admins(self) -> int:
+        """Return total count of active Admin accounts."""
+        result = await self.db.execute(
+            select(func.count()).select_from(User).where(
+                User.role == UserRole.ADMIN.value,
+                User.is_active.is_(True),
+            )
+        )
+        return result.scalar_one()
 
     async def list_all(
         self, params: PaginationParams

@@ -5,6 +5,7 @@ Tests user creation, profile view/edit authorization boundaries, and account dea
 
 import pytest
 from httpx import AsyncClient
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.security import hash_password
@@ -177,3 +178,82 @@ async def test_admin_deactivate_user(client: AsyncClient, db_session: AsyncSessi
         json={"phone": "03444444444", "password": "Password123"},
     )
     assert target_login.status_code == 403
+
+    # Reactivate target user -> 200
+    act_res = await client.patch(
+        f"/api/v1/users/{target.user_id}/activate",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert act_res.status_code == 200
+
+    # Verify target user can login again -> 200
+    target_login_again = await client.post(
+        "/api/v1/auth/login",
+        json={"phone": "03444444444", "password": "Password123"},
+    )
+    assert target_login_again.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_activate_already_active_user_fails(
+    client: AsyncClient, db_session: AsyncSession
+) -> None:
+    """Activating an already active user returns 422 BusinessRuleException."""
+    admin = User(
+        role="admin",
+        full_name="Admin ActiveTest",
+        phone="03777777799",
+        password_hash=hash_password("Password123"),
+        is_active=True,
+    )
+    db_session.add(admin)
+    await db_session.commit()
+
+    login_res = await client.post(
+        "/api/v1/auth/login",
+        json={"phone": "03777777799", "password": "Password123"},
+    )
+    token = login_res.json()["access_token"]
+
+    act_res = await client.patch(
+        f"/api/v1/users/{admin.user_id}/activate",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert act_res.status_code == 422
+    assert "User is already active" in act_res.json()["message"]
+
+
+@pytest.mark.asyncio
+async def test_prevent_deactivating_last_active_admin(
+    client: AsyncClient, db_session: AsyncSession
+) -> None:
+    """Deactivating the last active Admin account fails with 422 BusinessRuleException."""
+    # Deactivate pre-existing active admins in test session to isolate single-admin state
+    result = await db_session.execute(
+        select(User).where(User.role == "admin", User.is_active.is_(True))
+    )
+    for existing in result.scalars().all():
+        existing.is_active = False
+
+    sole_admin = User(
+        role="admin",
+        full_name="Sole Admin",
+        phone="03999999999",
+        password_hash=hash_password("Password123"),
+        is_active=True,
+    )
+    db_session.add(sole_admin)
+    await db_session.commit()
+
+    login_res = await client.post(
+        "/api/v1/auth/login",
+        json={"phone": "03999999999", "password": "Password123"},
+    )
+    token = login_res.json()["access_token"]
+
+    deact_res = await client.delete(
+        f"/api/v1/users/{sole_admin.user_id}",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert deact_res.status_code == 422
+    assert "Cannot deactivate the last active Admin account" in deact_res.json()["message"]

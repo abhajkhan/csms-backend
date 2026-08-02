@@ -102,6 +102,29 @@ async def update_user(
     return UserResponse.model_validate(user)
 
 
+@router.patch(
+    "/{id}/activate",
+    response_model=StandardResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Reactivate user",
+    description="Reactivate a user account by setting is_active = True (Admin only).",
+)
+async def activate_user(
+    id: int,
+    current_user: CurrentUserResponse = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+) -> StandardResponse:
+    user_service = UserService(db)
+    await user_service.activate_user(
+        requester_role=current_user.role,
+        target_id=id,
+    )
+    return StandardResponse(
+        success=True,
+        message=f"User id={id} was successfully activated.",
+    )
+
+
 @router.delete(
     "/{id}",
     response_model=StandardResponse,

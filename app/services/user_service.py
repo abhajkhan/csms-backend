@@ -114,9 +114,37 @@ class UserService:
         if not user:
             raise UserNotFoundException(target_id)
 
+        if not user.is_active:
+            raise BusinessRuleException("User is already deactivated.")
+
+        if user.role == UserRole.ADMIN.value:
+            active_admins = await self.user_repo.count_active_admins()
+            if active_admins <= 1:
+                raise BusinessRuleException(
+                    "Cannot deactivate the last active Admin account."
+                )
+
         deactivated_user = await self.user_repo.deactivate(user)
         await self.db.commit()
         return deactivated_user
+
+    async def activate_user(
+        self, requester_role: UserRole, target_id: int
+    ) -> User:
+        """Reactivate a user account (Admin only)."""
+        if requester_role != UserRole.ADMIN:
+            raise InsufficientRoleException(["admin"])
+
+        user = await self.user_repo.get_by_id(target_id)
+        if not user:
+            raise UserNotFoundException(target_id)
+
+        if user.is_active:
+            raise BusinessRuleException("User is already active.")
+
+        activated_user = await self.user_repo.activate(user)
+        await self.db.commit()
+        return activated_user
 
     async def list_users(
         self, requester_role: UserRole, params: PaginationParams
