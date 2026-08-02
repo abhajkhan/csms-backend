@@ -37,8 +37,8 @@ from app.repositories.user_repository import UserRepository
 
 async def seed_admin() -> None:
     """Create initial Admin account if none exists."""
-    admin_phone = os.getenv("SEED_ADMIN_PHONE", "03000000000").strip()
-    admin_password = os.getenv("SEED_ADMIN_PASSWORD", "Admin@123456")
+    admin_phone: str = "9876543210"
+    admin_password: str = "admin@123"
 
     async with SessionLocal() as session:
         try:
