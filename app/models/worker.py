@@ -3,13 +3,14 @@
 Table: ``workers``
 Design reference: CSMS_SPEC.md §6.4
 
-Workers are casual labourers hired per-site.  Each record tracks
+Workers are casual labourers hired per-site. Each record tracks
 the worker's name, daily wage, and the user who created them.
 ``is_active`` acts as a soft-delete flag.
 """
 
 from __future__ import annotations
 
+from decimal import Decimal
 from typing import TYPE_CHECKING
 
 from sqlalchemy import (
@@ -57,7 +58,7 @@ class Worker(Base):
         String(255),
         nullable=False,
     )
-    daily_wage: Mapped[float] = mapped_column(
+    daily_wage: Mapped[Decimal] = mapped_column(
         Numeric(12, 2),
         nullable=False,
     )
